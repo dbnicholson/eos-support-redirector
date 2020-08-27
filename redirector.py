@@ -23,26 +23,48 @@ from urllib.parse import urljoin
 # Base URL to redirect to
 SUPPORT_URL = os.getenv('SUPPORT_URL', 'https://support.endlessos.org')
 
-# Map from old URLs to new URLs
-LINK_MAP = dict((
-    ('/hc/en-us/articles/360041130551-How-to-use-the-Hack-laptop-',
-     '/help-center/How-to-use-the-Hack-laptop'),
-    ('/hc/en-us/articles/360041130271-What-is-a-pathway-',
-     '/help-center/What-is-a-pathway'),
-))
-
-# Map with optional article name suffix removed from old URL. I.e.,
-# '/hc/en-us/articles/12345-Some-title' is the same as
-# '/hc/en-us/articles/12345'.
-article_name_re = re.compile(r'(.*/\d+)-[^/]*$')
-SHORT_LINK_MAP = dict(
-    [(article_name_re.match(k).group(1), v) for k, v in LINK_MAP.items()]
+# Regex matching old Zendesk article URL paths. The language component,
+# slug suffix and trailing / are optional. Some valid Zendesk article
+# URLs:
+#
+# /hc/en-us/articles/12345-Some-title
+# /hc/en-us/articles/12345
+# /hc/articles/12345-Blah-blah-blah
+# /hc/pt/articles/67890
+# /hc/pt/articles/67890/
+ARTICLE_PATH_RE = re.compile(
+    # All paths begin with /hc
+    r'^/hc'
+    # Language is optional
+    r'(?:/(?P<lang>[^/]+))?'
+    # All paths contain /articles
+    r'/articles'
+    # The article number
+    r'/(?P<article>\d+)'
+    # Optional title slug
+    r'(?:-[^/]+)?'
+    # Optional trailing /
+    r'/?$'
 )
 
+# Map from article number to new article slug
+ARTICLE_MAP = {
+    '360041130551': 'How-to-use-the-Hack-laptop',
+    '360041130271': 'What-is-a-pathway',
+}
 
+
+# FIXME: Currently no language conversion is done until the language
+# handling of wiki.js is better understood.
 def convert_path(path):
-    """Convert path for old site to path for new site"""
-    return LINK_MAP.get(path, SHORT_LINK_MAP.get(path, ''))
+    """Convert URL path for old site to path for new site"""
+    match = ARTICLE_PATH_RE.match(path)
+    if not match:
+        return ''
+    dest_article = ARTICLE_MAP.get(match.group('article'))
+    if not dest_article:
+        return ''
+    return f'/help-center/{dest_article}'
 
 
 def application(env, start_response):
