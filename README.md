@@ -20,3 +20,10 @@ gunicorn redirector:application
 There is no configuration except for the base URL used for redirects. By
 default this is https://support.endlessos.org, but this can be changed
 via the `SUPPORT_URL` environment variable.
+
+## Testing
+
+Tests can be run from the `test.py` script. This uses python's
+[unittest][unittest] framework from the standard library.
+
+[unittest]: https://docs.python.org/3/library/unittest.html
