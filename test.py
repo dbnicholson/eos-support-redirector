@@ -21,6 +21,9 @@ class TestRedirector(unittest.TestCase):
          '/help-center/What-is-a-pathway'),
         ('/hc/pt/articles/360041130271/',
          '/help-center/What-is-a-pathway'),
+        ('/hc/articles/209063006',
+         ('/help-center/Where-can-I-download-the-Endless-OS-ISO-image-files-'
+          'directly')),
     ))
 
     # Paths that are not mapped and fallback to an empty path
