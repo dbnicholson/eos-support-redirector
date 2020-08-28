@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+exec gunicorn \
+    -b 0.0.0.0:8000 \
+    -w "${WORKERS:-2}" \
+    -t 180 \
+    --access-logfile - \
+    --error-logfile - \
+    --worker-tmp-dir /dev/shm \
+    redirector:application

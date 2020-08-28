@@ -13,7 +13,21 @@ Any WSGI server will work. For example, using [gunicorn][gunicorn]:
 gunicorn redirector:application
 ```
 
+A [Docker][docker] image with `gunicorn` can also be used. First, build
+the image:
+
+```
+docker build -t redirector .
+```
+
+Then start the container with port 8000 published:
+
+```
+docker run -p 8000:8000 redirector
+```
+
 [gunicorn]: https://gunicorn.org/
+[docker]: https://www.docker.com/
 
 ## Configuration
 
